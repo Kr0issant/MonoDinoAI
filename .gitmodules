@@ -1,0 +1,3 @@
+[submodule "lib/MonoUtils"]
+	path = lib/MonoUtils
+	url = https://github.com/Kr0issant/MonoUtils
