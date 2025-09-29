@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -15,10 +16,11 @@ namespace MonoDinoAI
         private Sprites sprites;
         private Shapes shapes;
         private Camera camera;
-        private Texture2D texture;
         private Screen screen;
         private UtilsKeyboard keyboard = new UtilsKeyboard();
         private UtilsMouse mouse = new UtilsMouse();
+
+        private Texture2D smileyTexture;
 
         public Game1()
         {
@@ -40,12 +42,16 @@ namespace MonoDinoAI
             screen = new Screen(this, 1280, 720);
             camera = new Camera(screen);
 
+            World.GroundY = -screen.Height / 4 + 40;
+            Player.PosX = 0;
+            Player.PosY = World.GroundY;
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-
+            smileyTexture = Content.Load<Texture2D>("smiley");
         }
 
         protected override void Update(GameTime gameTime)
@@ -56,9 +62,9 @@ namespace MonoDinoAI
             if (keyboard.IsKeyClicked(Keys.Escape)) { this.Exit(); }
             if (keyboard.IsKeyClicked(Keys.F)) { this.screen.ToggleFullScreen(this.graphics); }
 
-            if (mouse.IsScrollingUp()) { camera.MoveZ(10f); }
-            else if (mouse.IsScrollingDown()) { camera.MoveZ(-10f); }
-            else if (keyboard.IsKeyClicked(Keys.R) && keyboard.IsKeyDown(Keys.LeftControl)) { camera.ResetZ(); }
+            if (keyboard.IsKeyClicked(Keys.Space)) { Player.Jump(); }
+
+            Player.UpdatePlayerPhysics();
 
             base.Update(gameTime);
         }
@@ -71,11 +77,11 @@ namespace MonoDinoAI
             Viewport vp = GraphicsDevice.Viewport;
 
             sprites.Begin(camera, false);
-            // Draw sprites
+            sprites.Draw(smileyTexture, null, new Vector2(8, 8), new Vector2(0, Player.PosY), 0, new Vector2(5f, 5f), Color.White);
             sprites.End();
 
             shapes.Begin(camera);
-            // shapes.DrawRectangle(0, 0, 50, 100, Color.Red, Shapes.FillMode.Filled, 2f);
+            shapes.DrawRectangle(-screen.Width / 2, -screen.Height / 2, screen.Width, screen.Height / 4, Color.SaddleBrown);
             shapes.End();
 
             screen.Unset();
