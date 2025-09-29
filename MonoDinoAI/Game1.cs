@@ -14,11 +14,16 @@ namespace MonoDinoAI
     {
         private GraphicsDeviceManager graphics;
         private Sprites sprites;
+        private SpriteFont font;
         private Shapes shapes;
         private Camera camera;
         private Screen screen;
         private UtilsKeyboard keyboard = new UtilsKeyboard();
         private UtilsMouse mouse = new UtilsMouse();
+
+        private float screenWidthByTwo;
+        private float screenHeightByTwo;
+        private float screenHeightByFour;
 
         private Texture2D smileyTexture;
 
@@ -42,8 +47,12 @@ namespace MonoDinoAI
             screen = new Screen(this, 1280, 720);
             camera = new Camera(screen);
 
-            World.GroundY = -screen.Height / 4 + 40;
-            World.SpawnX = screen.Width / 2 + 20f;
+            screenWidthByTwo = screen.Width / 2;
+            screenHeightByTwo = screen.Height / 2;
+            screenHeightByFour = screen.Height / 4;
+
+            World.GroundY = -screenHeightByFour + 40;
+            World.SpawnX = screenWidthByTwo + 20f;
             Player.PosX = 0;
             Player.PosY = World.GroundY;
 
@@ -52,6 +61,8 @@ namespace MonoDinoAI
 
         protected override void LoadContent()
         {
+            font = Content.Load<SpriteFont>("DefaultFont");
+            sprites.Font = font;
             smileyTexture = Content.Load<Texture2D>("smiley");
         }
 
@@ -80,10 +91,11 @@ namespace MonoDinoAI
 
             sprites.Begin(camera, false);
             sprites.Draw(smileyTexture, null, new Vector2(8, 8), new Vector2(0, Player.PosY), 0, new Vector2(5f, 5f), Color.White);
+            sprites.DrawString($"Score: {World.Score}", new Vector2(-screenWidthByTwo + 50, screenHeightByTwo - 50), Color.White);
             sprites.End();
 
             shapes.Begin(camera);
-            shapes.DrawRectangle(-screen.Width / 2, -screen.Height / 2, screen.Width, screen.Height / 4, Color.SaddleBrown);
+            shapes.DrawRectangle(-screenWidthByTwo, -screenHeightByTwo, screen.Width, screenHeightByFour, Color.SaddleBrown);
             foreach (Obstacle obstacle in World.obstacles)
             {
                 shapes.DrawRectangle(obstacle.PosX1, World.GroundY - 40, obstacle.PosX2 - obstacle.PosX1, obstacle.Height, Color.Red);
