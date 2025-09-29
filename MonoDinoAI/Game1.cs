@@ -43,6 +43,7 @@ namespace MonoDinoAI
             camera = new Camera(screen);
 
             World.GroundY = -screen.Height / 4 + 40;
+            World.SpawnX = screen.Width / 2 + 20f;
             Player.PosX = 0;
             Player.PosY = World.GroundY;
 
@@ -64,7 +65,8 @@ namespace MonoDinoAI
 
             if (keyboard.IsKeyClicked(Keys.Space)) { Player.Jump(); }
 
-            Player.UpdatePlayerPhysics();
+            Player.Update();
+            World.Update();
 
             base.Update(gameTime);
         }
@@ -82,6 +84,10 @@ namespace MonoDinoAI
 
             shapes.Begin(camera);
             shapes.DrawRectangle(-screen.Width / 2, -screen.Height / 2, screen.Width, screen.Height / 4, Color.SaddleBrown);
+            foreach (Obstacle obstacle in World.obstacles)
+            {
+                shapes.DrawRectangle(obstacle.PosX1, World.GroundY - 40, obstacle.PosX2 - obstacle.PosX1, obstacle.Height, Color.Red);
+            }
             shapes.End();
 
             screen.Unset();

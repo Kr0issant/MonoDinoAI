@@ -13,7 +13,7 @@ namespace MonoDinoAI
         private const float jumpForce = 25f;
         private static float verticalVelocity = 0f;
 
-        public static void UpdatePlayerPhysics()
+        public static void Update()
         {
             //Console.WriteLine($"{World.GroundY} | {PosY}");
             verticalVelocity += gravity;
