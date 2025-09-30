@@ -92,6 +92,8 @@ namespace MonoDinoAI
             sprites.Begin(camera, false);
             sprites.Draw(smileyTexture, null, new Vector2(8, 8), new Vector2(0, Player.PosY), 0, new Vector2(5f, 5f), Color.White);
             sprites.DrawString($"Score: {World.Score}", new Vector2(-screenWidthByTwo + 50, screenHeightByTwo - 50), Color.White);
+            sprites.DrawString($"High Score: {World.HighScore}", new Vector2(-screenWidthByTwo + 50, screenHeightByTwo - 75), Color.White);
+            if (World.IsGameOver) { sprites.DrawString("GAME OVER!", new Vector2(screenHeightByTwo - 50, screenHeightByTwo - 50), Color.Red); }
             sprites.End();
 
             shapes.Begin(camera);
