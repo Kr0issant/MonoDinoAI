@@ -8,6 +8,7 @@ namespace MonoDinoAI
     {
         public static float PosX { get; set; }
         public static float PosY { get; set; }
+        public static float VelocityY { get { return verticalVelocity; } }
 
         private const float gravity = -1.5f;
         private const float jumpForce = 25f;

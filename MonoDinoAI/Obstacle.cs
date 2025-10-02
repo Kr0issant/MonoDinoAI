@@ -10,6 +10,7 @@ namespace MonoDinoAI
         public float PosX2 { get; set; }
         public float PosY { get; set; }
         public float Height { get; set; }
+        public float Width { get { return PosX2 - PosX1; } }
 
         public Obstacle(float initialX, float width, float height)
         {

@@ -1,12 +1,15 @@
-﻿using System;
-using System.Security.Cryptography;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoUtils;
 using MonoUtils.Graphics;
 using MonoUtils.Input;
 using MonoUtils.Utility;
+using System;
+using System.Security.Cryptography;
+using System.Threading;
+using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MonoDinoAI
 {
@@ -24,6 +27,12 @@ namespace MonoDinoAI
         private float screenWidthByTwo;
         private float screenHeightByTwo;
         private float screenHeightByFour;
+
+        private AgentClient agentClient;
+
+        private bool waitingForAction = false;
+        private int frameCount = 0;
+        private const int decisionSkipFrames = 4;
 
         private Texture2D smileyTexture;
 
@@ -56,6 +65,8 @@ namespace MonoDinoAI
             Player.PosX = 0;
             Player.PosY = World.GroundY;
 
+            agentClient = new AgentClient();
+
             base.Initialize();
         }
 
@@ -74,10 +85,19 @@ namespace MonoDinoAI
             if (keyboard.IsKeyClicked(Keys.Escape)) { this.Exit(); }
             if (keyboard.IsKeyClicked(Keys.F)) { this.screen.ToggleFullScreen(this.graphics); }
 
-            if (keyboard.IsKeyClicked(Keys.Space)) { Player.Jump(); }
+            //if (keyboard.IsKeyClicked(Keys.Space)) { Player.Jump(); }
+
+            int actionToExecute = Interlocked.Exchange(ref agentClient.PendingAction, 0);
+            if (actionToExecute == 1) { Player.Jump(); }
 
             Player.Update();
             World.Update();
+
+            if (!agentClient.IsAgentThinking && ++frameCount == decisionSkipFrames)
+            {
+                agentClient.StartAgentDecisionTask();
+                frameCount = 0;
+            }
 
             base.Update(gameTime);
         }
