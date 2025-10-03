@@ -28,8 +28,8 @@ SAVE_FREQUENCY = 500
 
 def build_model():
     model = Sequential([
-        Dense(64, activation="relu", input_shape=(STATE_SIZE,)),
-        Dense(64, activation="relu"),
+        Dense(32, activation="relu", input_shape=(STATE_SIZE,)),
+        Dense(16, activation="relu"),
         Dense(ACTION_SIZE, activation="linear")
     ])
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE), loss="mse")
