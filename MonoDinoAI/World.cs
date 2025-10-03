@@ -14,9 +14,13 @@ namespace MonoDinoAI
         public static bool IsGameOverActual { get; set; } = false;
         public static float SpawnX { get; set; }
 
+        public static float NextObstacleX { get; set; }
+        public static float NextObstacleXNormalized { get { return lastObjectPosition; } }
+
         private static float score = 0f;
         private static float lastScore = 0f;
         private static bool isJumpNecessary = false;
+        private static float[] state;
 
         private static bool crossedOverObstacle = false;
         private static float lastObjectPosition = 0f;
@@ -76,6 +80,28 @@ namespace MonoDinoAI
                 obstacle.PosX2 -= gameSpeed;
             }
             framesSinceLastSpawn++;
+
+            state = new float[6] { 1f, 1f, 1f, (Player.VelocityY + 24f) / 48f, (Player.PosY + 140f) / 196f, gameSpeed / maxGameSpeed };
+
+            int i = 0;
+            for (i = 0; i < obstacles.Count; i++)
+            {
+                if (obstacles[i].PosX2 > 0)
+                {
+                    state[0] = obstacles[i].PosX1 / (SpawnX + spawnWidthMin);
+                    state[1] = obstacles[i].Width / spawnWidthMax;
+                    state[2] = obstacles[i].Height / spawnHeightMax;
+
+                    isJumpNecessary = state[0] < 0.2f ? true : false;
+
+                    if (state[0] > lastObjectPosition) { crossedOverObstacle = true; }
+                    lastObjectPosition = state[0];
+
+                    NextObstacleX = obstacles[i].PosX1;
+
+                    break;
+                }
+            }
         }
         public static void SpawnObstacle()
         {
@@ -88,38 +114,19 @@ namespace MonoDinoAI
 
         public static float[] GetCurrentState()
         {
-            float[] state = new float[6] { 1f, 1f, 1f, (Player.VelocityY + 24f) / 48f, (Player.PosY + 140f) / 196f, gameSpeed / maxGameSpeed };
-
-            int i = 0;
-            for (i = 0; i < obstacles.Count; i++)
-            {
-                if (obstacles[i].PosX2 > 0)
-                {
-                    state[0] = obstacles[i].PosX1 / (SpawnX + spawnWidthMin);
-                    state[1] = obstacles[i].Width / spawnWidthMax;
-                    state[2] = obstacles[i].Height / spawnHeightMax;
-
-                    isJumpNecessary = state[0] < 0.3f ? true : false;
-
-                    if (state[0] > lastObjectPosition) { crossedOverObstacle = true; }
-                    lastObjectPosition = state[0];
-
-                    break;
-                }
-            }
             return state;
         }
         public static float CalculateReward(bool isGameOver, int lastAction)
         {
-            if (isGameOver) { IsGameOverActual = false; Console.WriteLine(-20); return -20f; }
+            if (isGameOver) { IsGameOverActual = false; return -30f; }
 
             float reward = score - lastScore;
 
             if (reward < 0.01f && reward > -0.01f) { reward = 0.01f; }
-            if (crossedOverObstacle) { reward += 5f; crossedOverObstacle = false; }
-            else if (lastAction == 1 && !isJumpNecessary) { reward -= 0.8f; }
+            if (crossedOverObstacle) { reward += 10f; crossedOverObstacle = false; }
+            else if (lastAction == 1 && !isJumpNecessary) { Console.Clear(); Console.WriteLine("Unnecessary Jump" + rng.Next(1, 101).ToString()); reward -= 0.5f; isJumpNecessary = true; }
 
-            Console.WriteLine($"Reward: {reward}");
+            //Console.WriteLine($"Reward: {reward}");
             return reward;
         }
         public static void UpdateLastScore()

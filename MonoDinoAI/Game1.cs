@@ -85,7 +85,7 @@ namespace MonoDinoAI
             if (keyboard.IsKeyClicked(Keys.Escape)) { this.Exit(); }
             if (keyboard.IsKeyClicked(Keys.F)) { this.screen.ToggleFullScreen(this.graphics); }
 
-            //if (keyboard.IsKeyClicked(Keys.Space)) { Player.Jump(); }
+            if (keyboard.IsKeyClicked(Keys.Space)) { Player.Jump(); }
 
             int actionToExecute = Interlocked.Exchange(ref agentClient.PendingAction, 0);
             if (actionToExecute == 1) { Player.Jump(); }
@@ -118,6 +118,8 @@ namespace MonoDinoAI
 
             shapes.Begin(camera);
             shapes.DrawRectangle(-screenWidthByTwo, -screenHeightByTwo, screen.Width, screenHeightByFour, Color.SaddleBrown);
+            //Console.WriteLine(World.NextObstacleXNormalized);
+            shapes.DrawLine(new Vector2(0, World.GroundY - 50f), new Vector2(World.NextObstacleX, World.GroundY - 50f), 5f, Color.Blue);
             foreach (Obstacle obstacle in World.obstacles)
             {
                 shapes.DrawRectangle(obstacle.PosX1, World.GroundY - 40, obstacle.PosX2 - obstacle.PosX1, obstacle.Height, Color.Red);
