@@ -3,9 +3,9 @@ name = "ai"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10.18"
 dependencies = [
     "flask>=3.1.2",
-    "numpy>=2.3.3",
+    "numpy>=2.2.6",
     "tensorflow>=2.20.0",
 ]
